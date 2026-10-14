@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Who's Who? — Guess My Fact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100%; overflow-x: hidden; }
+
+  :root {
+    --pink: #ff6b9d;
+    --purple: #c084fc;
+    --indigo: #6366f1;
+    --cyan: #06b6d4;
+    --lime: #a3e635;
+    --yellow: #fde047;
+    --coral: #fb7185;
+  }
+
+  body {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    color: #1a1a2e;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    min-height: 100vh;
+    position: relative;
+    background: #0f0f1e;
+  }
+
+  /* Iridescent animated background */
+  body::before {
+    content: '';
+    position: fixed; inset: -25%;
+    background:
+      conic-gradient(from 0deg at 30% 20%,
+        #ff6b9d 0deg, #c084fc 60deg, #6366f1 120deg, #06b6d4 180deg,
+        #a3e635 240deg, #fde047 300deg, #ff6b9d 360deg);
+    filter: blur(90px) saturate(1.5);
+    opacity: 0.55;
+    z-index: -2;
+    animation: spin 30s linear infinite;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at top, transparent 0%, rgba(15,15,30,0.45) 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+    background-size: cover, 200px 200px;
+    z-index: -1;
+    pointer-events: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .app {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative; z-index: 1;
+  }
+
+  header { text-align: center; padding: 4px 0 14px; }
+  .logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 18px;
+    background: linear-gradient(135deg, #fff, #fde047);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 1px;
+  }
+  .logo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    box-shadow: 0 0 14px rgba(255,107,157,0.8);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; animation: fadeUp .5s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* ====== COVER ====== */
+  .cover-hero {
+    text-align: center;
+    padding: 22px 20px 18px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-hero::before {
+    content: '';
+    position: absolute; top: -50px; right: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(255,107,157,0.4), transparent 70%);
+    border-radius: 50%;
+  }
+  .cover-emoji {
+    font-size: 42px; display: block; margin-bottom: 6px;
+    animation: wobble 2s ease-in-out infinite;
+  }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-6deg) scale(1); }
+    50% { transform: rotate(6deg) scale(1.08); }
+  }
+  .cover-title {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 34px;
+    line-height: 1;
+    margin: 4px 0 8px;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 50%, var(--indigo) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .cover-sub {
+    color: #4a4e69; font-size: 14px; line-height: 1.5; margin: 0;
+    font-weight: 600;
+  }
+  .sticker {
+    position: absolute;
+    font-size: 26px;
+    pointer-events: none;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-8px) rotate(8deg); }
+  }
+
+  .roster-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .flip-card {
+    perspective: 1200px;
+    height: 230px;
+    cursor: pointer;
+  }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 22px;
+    padding: 14px 12px;
+    display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    border: 1px solid rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+  .flip-front {
+    background: linear-gradient(180deg, #fff 0%, #fff5fb 100%);
+  }
+  .flip-back {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 100%);
+    transform: rotateY(180deg);
+    color: #fff;
+    justify-content: center;
+    text-align: center;
+  }
+  .bio-quote {
+    font-family: 'Fredoka', serif;
+    font-size: 60px;
+    line-height: 0.5;
+    opacity: 0.3;
+    margin-bottom: 4px;
+  }
+  .bio-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: #fff;
+    padding: 0 4px;
+  }
+  .bio-name {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 15px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, var(--yellow), var(--coral));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 0.5px;
+  }
+
+  .photo-frame {
+    position: relative;
+    width: 88px; height: 88px;
+    margin-bottom: 8px;
+  }
+  .photo-frame .photo {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    background: #f0f0f5;
+  }
+  .photo-frame.susin .photo {
+    object-position: center 30%;
+  }
+
+  .avatar-bubble {
+    position: absolute;
+    bottom: -4px; right: -10px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2.5px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    overflow: hidden;
+    background: #fff;
+    z-index: 3;
+  }
+  .avatar-bubble svg { width: 100%; height: 100%; display: block; }
+
+  .avatar-eye {
+    transform-origin: center;
+    animation: blink 4.5s infinite;
+  }
+  @keyframes blink {
+    0%, 92%, 96%, 100% { transform: scaleY(1); }
+    94% { transform: scaleY(0.1); }
+  }
+  .avatar-mouth {
+    transform-origin: center;
+    animation: breathe 3s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+  .avatar-bubble.cheer .avatar-mouth {
+    animation: cheer 0.55s ease-in-out 3;
+  }
+  @keyframes cheer {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5) translateY(-1px); }
+  }
+  .avatar-bubble.wave {
+    animation: wave 0.6s ease-in-out 2;
+  }
+  @keyframes wave {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-12deg); }
+    75% { transform: rotate(12deg); }
+  }
+  .flip-card:hover .avatar-eye { animation-duration: 1.5s; }
+
+  .flip-name {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 17px;
+    color: #1a1a2e;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+  .flip-hint {
+    font-size: 10px;
+    color: #8b8ba3;
+    margin-top: 2px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    animation: hintPulse 2s ease-in-out infinite;
+  }
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* ====== BUTTONS ====== */
+  .btn {
+    appearance: none; border: none; cursor: pointer;
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 17px;
+    padding: 16px 32px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 50%, var(--indigo) 100%);
+    background-size: 200% 200%;
+    box-shadow: 0 10px 24px rgba(255,107,157,0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    animation: shimmer 3.5s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 14px 30px rgba(255,107,157,0.65);
+  }
+  .btn:active { transform: translateY(-1px) scale(1.01); }
+
+  /* ====== GAME ====== */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 10px;
+  }
+  .progress-wrap {
+    flex: 1;
+    background: rgba(255,255,255,0.5);
+    border-radius: 999px; height: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--yellow), var(--lime), var(--cyan));
+    background-size: 200% 100%;
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(.22,1,.36,1);
+    width: 0%;
+    animation: progressShift 3s linear infinite;
+  }
+  @keyframes progressShift { to { background-position: 200% 0; } }
+
+  .score-pill {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 14px;
+    color: #1a1a2e;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    white-space: nowrap;
+  }
+  .score-pill .heart { color: var(--pink); }
+
+  .question-counter {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    margin: 4px 0 10px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+  .question-counter .num { color: var(--yellow); font-family: 'Bagel Fat One', sans-serif; font-size: 16px; }
+
+  .fact-card {
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .fact-card::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, rgba(255,107,157,0.3), transparent 70%);
+    border-radius: 50%;
+  }
+  .fact-card::after {
+    content: '';
+    position: absolute; bottom: -30px; left: -30px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(99,102,241,0.25), transparent 70%);
+    border-radius: 50%;
+  }
+  .fact-icon { font-size: 42px; display: block; margin-bottom: 2px; }
+  .fact-label {
+    font-family: 'Bagel Fat One', sans-serif;
+    color: var(--pink);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin: 4px 0 6px;
+  }
+  .fact-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 17.5px;
+    line-height: 1.45;
+    color: #1a1a2e;
+    margin: 0;
+    position: relative; z-index: 1;
+  }
+
+  .attempts {
+    display: flex; justify-content: center; gap: 6px;
+    margin: 0 0 10px;
+  }
+  .attempts .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid rgba(255,255,255,0.8);
+    transition: all 0.3s ease;
+  }
+  .attempts .dot.used {
+    background: var(--coral);
+    border-color: var(--coral);
+    box-shadow: 0 0 8px rgba(251,113,133,0.6);
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .choice {
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 8px 6px 6px;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  }
+  .choice:hover { transform: translateY(-3px); background: rgba(255,255,255,0.95); }
+  .choice:active { transform: scale(0.96); }
+  .choice img {
+    width: 100%; aspect-ratio: 1; object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  }
+  .choice.susin img { object-position: center 30%; }
+  .choice-name {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 12px;
+    margin-top: 6px;
+    color: #1a1a2e;
+    letter-spacing: 0.5px;
+  }
+  .choice.correct {
+    border-color: #22c55e;
+    background: rgba(187,247,208,0.95);
+    animation: pop 0.5s ease;
+  }
+  .choice.correct img { animation: crown 0.6s ease; }
+  @keyframes crown {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15) rotate(4deg); }
+    100% { transform: scale(1.05); }
+  }
+  .choice.wrong {
+    border-color: #ef4444;
+    background: rgba(254,202,202,0.85);
+    animation: shake 0.5s ease;
+  }
+  .choice.disabled { pointer-events: none; opacity: 0.55; }
+  .choice.disabled.correct { opacity: 1; }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px) rotate(-3deg); }
+    60% { transform: translateX(8px) rotate(3deg); }
+    80% { transform: translateX(-4px) rotate(-1deg); }
+  }
+
+  /* ====== FEEDBACK OVERLAY ====== */
+  .feedback {
+    position: fixed; inset: 0;
+    display: none;
+    align-items: center; justify-content: center;
+    background: rgba(15,15,30,0.65);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+    padding: 20px;
+  }
+  .feedback.show { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .feedback-card {
+    background: #fff;
+    border-radius: 28px;
+    padding: 26px 22px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    animation: pop 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .feedback-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--pink), var(--purple), var(--indigo), var(--cyan));
+  }
+  .feedback-emoji { font-size: 60px; display: block; margin: 6px 0 2px; }
+  .feedback-title {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 24px;
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+  }
+  .feedback-title.ok { color: #16a34a; }
+  .feedback-title.no { color: #ef4444; }
+  .feedback-title.try { color: var(--purple); }
+  .feedback-text {
+    color: #4a4e69; font-size: 15px; line-height: 1.5;
+    margin: 0 0 18px; font-weight: 600;
+  }
+  .feedback-text b { color: #1a1a2e; }
+  .feedback-text .small { display: block; color: #8b8ba3; font-size: 12px; margin-top: 4px; font-weight: 600; }
+
+  /* ====== END SCREEN ====== */
+  .end-card {
+    padding: 30px 22px;
+    text-align: center;
+    margin-top: 14px;
+  }
+  .trophy {
+    font-size: 76px; display: block; margin-bottom: 4px;
+    animation: wobble 1.5s ease-in-out infinite;
+  }
+  .end-title {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 30px;
+    background: linear-gradient(135deg, var(--pink), var(--purple), var(--indigo));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin: 4px 0 8px;
+    letter-spacing: 0.5px;
+  }
+  .final-score {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 68px;
+    line-height: 1;
+    margin: 14px 0 4px;
+    background: linear-gradient(135deg, var(--pink), var(--yellow));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .final-score small {
+    font-size: 24px; color: #8b8ba3; -webkit-text-fill-color: #8b8ba3;
+  }
+  .end-message {
+    color: #4a4e69; font-size: 15px; line-height: 1.5;
+    margin: 8px 0 22px; font-weight: 600;
+  }
+  .stats-row {
+    display: flex; gap: 10px;
+    margin: 16px 0 22px;
+  }
+  .stat {
+    flex: 1;
+    background: rgba(255,255,255,0.7);
+    border-radius: 16px;
+    padding: 12px 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  }
+  .stat-val {
+    font-family: 'Bagel Fat One', sans-serif;
+    font-size: 22px;
+    color: #1a1a2e;
+  }
+  .stat-label {
+    font-size: 10px; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-top: 2px;
+    font-weight: 700;
+  }
+  .stat.correct .stat-val { color: #16a34a; }
+  .stat.retry .stat-val { color: var(--purple); }
+  .stat.wrong .stat-val { color: #ef4444; }
+
+  #confetti-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  @media (max-width: 380px) {
+    .fact-text { font-size: 16px; }
+    .cover-title { font-size: 28px; }
+    .final-score { font-size: 56px; }
+    .flip-card { height: 215px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="app">
+  <header>
+    <div class="logo">
+      <span class="logo-dot"></span>
+      <span>WHO'S WHO?</span>
+      <span class="logo-dot"></span>
+    </div>
+  </header>
+
+  <!-- COVER SCREEN -->
+  <section id="screen-cover" class="screen active">
+    <div class="cover-hero glass">
+      <span class="cover-emoji">✨</span>
+      <h1 class="cover-title">Meet the Crew</h1>
+      <p class="cover-sub">Tap a face to flip & read the bio.<br/>Then let's see who knows who 👀</p>
+      <span class="sticker" style="top: 16px; right: 18px;">🌸</span>
+      <span class="sticker" style="bottom: 24px; left: 18px; animation-delay: 0.6s;">💖</span>
+    </div>
+
+    <div class="roster-grid" id="roster-grid"></div>
+
+    <button class="btn" id="go-start-btn">Start Game ✨</button>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="screen-game" class="screen">
+    <div class="topbar">
+      <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="score-pill"><span class="heart">💖</span> <span id="score">0</span></div>
+    </div>
+    <div class="question-counter">Question <span class="num" id="q-current">1</span> of <span id="q-total">12</span></div>
+
+    <div class="fact-card glass">
+      <span class="fact-icon" id="fact-icon">✨</span>
+      <div class="fact-label">fun fact</div>
+      <p class="fact-text" id="fact-text"></p>
+    </div>
+
+    <div class="attempts" id="attempts">
+      <div class="dot" data-try="1"></div>
+      <div class="dot" data-try="2"></div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- END SCREEN -->
+  <section id="screen-end" class="screen">
+    <div class="end-card glass">
+      <span class="trophy">🏆</span>
+      <h1 class="end-title" id="end-title">Slay!</h1>
+      <div class="final-score"><span id="final-score">0</span><small>/12</small></div>
+      <p class="end-message" id="end-message"></p>
+
+      <div class="stats-row">
+        <div class="stat correct"><div class="stat-val" id="stat-correct">0</div><div class="stat-label">1st try</div></div>
+        <div class="stat retry"><div class="stat-val" id="stat-retry">0</div><div class="stat-label">2nd try</div></div>
+        <div class="stat wrong"><div class="stat-val" id="stat-wrong">0</div><div class="stat-label">missed</div></div>
+      </div>
+
+      <button class="btn" id="restart-btn">Back to Crew 💖</button>
+    </div>
+  </section>
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div class="feedback" id="feedback">
+  <div class="feedback-card">
+    <span class="feedback-emoji" id="fb-emoji">✅</span>
+    <h2 class="feedback-title" id="fb-title">Nailed it!</h2>
+    <p class="feedback-text" id="fb-text"></p>
+    <button class="btn" id="fb-next">Next ➡</button>
+  </div>
+</div>
+
+<script>
+/* ========== DATA ========== */
+const MEMBERS = [
+  { id: 'angel',   name: 'Angel',   img: 'angel.jpg',   bio: "Travelled 20 countries during my exchange in the Netherlands.",                  avatar: 'angel' },
+  { id: 'mahika',  name: 'Mahika',  img: 'mahika.jpg',  bio: "I'm driven by creativity and dessert.",                                        avatar: 'mahika' },
+  { id: 'bhavya',  name: 'Bhavya',  img: 'bhavya.jpg',  bio: "I'm a big foodie and a napaholic.",                                             avatar: 'bhavya' },
+  { id: 'matthew', name: 'Matthew', img: 'matthew.jpg', bio: "On time to class 25% of the time.",                                             avatar: 'matthew' },
+  { id: 'susin',   name: 'Susin',   img: 'susin.jpeg',  bio: "I once went camping and kayaked around islands in Sai Kung for a whole week.", avatar: 'susin' },
+  { id: 'angie',   name: 'Angie',   img: 'angie.jpg',   bio: "Never leaves home without hair and make up done.",                              avatar: 'angie' },
+];
+
+const FACTS = [
+  { owner: 'angel',   icon: '🏃‍♀️', text: "I completed my first 10K and am going to do my first half marathon next January!" },
+  { owner: 'angel',   icon: '📸', text: "Love travelling, taking pictures, and documenting little moments in life." },
+  { owner: 'mahika',  icon: '🎭', text: "I love to perform: theatre, dance and singing!" },
+  { owner: 'mahika',  icon: '🥋', text: "I have a black belt." },
+  { owner: 'bhavya',  icon: '📚', text: "I love to read books and watch TV shows :)" },
+  { owner: 'bhavya',  icon: '🗣️', text: "I can speak 5 languages." },
+  { owner: 'matthew', icon: '🎻', text: "Have played in 4 different orchestra / bands within the past 3 months." },
+  { owner: 'matthew', icon: '😴', text: "Sleeps at any random time past 12am." },
+  { owner: 'susin',   icon: '🛶', text: "I once went camping and kayaked around islands in Sai Kung for a week." },
+  { owner: 'susin',   icon: '🐱', text: "I love cats and will pet any I see anywhere and everywhere (as long as they don't seem aggressive)." },
+  { owner: 'angie',   icon: '💎', text: "I have a diploma in gemstones & jewellery!" },
+  { owner: 'angie',   icon: '🌸', text: "I have a collection of over 100 fragrances." },
+];
+
+const TRY_AGAIN = [
+  "Hmm, not quite — try again!",
+  "Oof, close but no cigar 😅",
+  "Nope, take another guess!",
+  "Trust your gut — pick again!",
+  "One more shot, you got this! 💪"
+];
+const GIVE_UP = [
+  "Surprise twist! It was actually {name} 😮",
+  "Plot twist: {name} said it 🫢",
+  "Tricky one! The answer is {name}.",
+  "Oh! It was {name} all along.",
+  "Not this time — it's {name}!"
+];
+const FINAL_ENCOURAGE = [
+  "But hey, you got it eventually! High five 🙌",
+  "Better late than never, right? 😄",
+  "No worries — {name} is happy you tried!",
+  "Nice recovery! ✨",
+  "Now you know a Susin/Susin-level secret 💅"
+];
+
+/* ========== AVATAR SVGs ========== */
+const AVATARS = {
+  angel: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="ag-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd1e8"/><stop offset="1" stop-color="#ff8ec2"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#ag-bg)"/>
+    <text x="36" y="12" font-size="8">✨</text>
+    <text x="1" y="11" font-size="7">💫</text>
+    <circle cx="22" cy="26" r="13" fill="#ffe0d0"/>
+    <path d="M9 20 Q11 9 22 9 Q33 9 35 20 L35 18 Q33 8 22 8 Q11 8 9 18 Z" fill="#3a2418"/>
+    <ellipse class="avatar-eye" cx="17" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="27" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M18 30 Q22 33 26 30" stroke="#e11d48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <circle cx="13" cy="28" r="1.2" fill="#ff8ec2" opacity="0.7"/>
+    <circle cx="31" cy="28" r="1.2" fill="#ff8ec2" opacity="0.7"/>
+    <text x="2" y="42" font-size="7">👟</text>
+  </svg>`,
+  mahika: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="mh-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fbbf24"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#mh-bg)"/>
+    <text x="36" y="12" font-size="8">🎵</text>
+    <text x="1" y="11" font-size="7">✨</text>
+    <circle cx="22" cy="26" r="13" fill="#d4a574"/>
+    <path d="M10 20 Q22 9 34 20 L34 16 Q22 5 10 16 Z" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="17" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="27" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M18 30 Q22 33 26 30" stroke="#e11d48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M19 31 L21 33 L25 29" stroke="#fff" stroke-width="0.8" fill="none"/>
+    <text x="2" y="42" font-size="7">🎭</text>
+  </svg>`,
+  bhavya: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="bh-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#bh-bg)"/>
+    <text x="34" y="13" font-size="8">💤</text>
+    <text x="2" y="11" font-size="7">📚</text>
+    <circle cx="22" cy="27" r="13" fill="#f0d0a8"/>
+    <path d="M8 22 Q12 8 22 8 Q32 8 36 22 Q36 17 32 13 L12 13 Q8 17 8 22" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="17" cy="26" rx="1.6" ry="2" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="27" cy="26" rx="1.6" ry="2" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M19 31 Q22 33 25 31" stroke="#e11d48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <text x="2" y="42" font-size="7">🍕</text>
+  </svg>`,
+  matthew: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="mt-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cffafe"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#mt-bg)"/>
+    <text x="34" y="12" font-size="8">🎻</text>
+    <text x="2" y="11" font-size="7">♪</text>
+    <circle cx="22" cy="26" r="13" fill="#fce5b8"/>
+    <path d="M9 21 Q12 9 22 9 Q32 9 35 21" fill="#1a1a2e"/>
+    <circle cx="14" cy="25" r="3.8" fill="none" stroke="#1a1a2e" stroke-width="1.2"/>
+    <circle cx="30" cy="25" r="3.8" fill="none" stroke="#1a1a2e" stroke-width="1.2"/>
+    <ellipse class="avatar-eye" cx="14" cy="25" rx="1.4" ry="1.8" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="30" cy="25" rx="1.4" ry="1.8" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M18 30 Q22 32 26 30" stroke="#e11d48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <text x="2" y="42" font-size="7">😴</text>
+  </svg>`,
+  susin: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="ss-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bbf7d0"/><stop offset="1" stop-color="#4ade80"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#ss-bg)"/>
+    <text x="34" y="12" font-size="8">🐱</text>
+    <text x="2" y="11" font-size="7">🐾</text>
+    <path d="M8 22 L8 14 L14 18 Z M36 22 L36 14 L30 18 Z" fill="#1a1a2e"/>
+    <circle cx="22" cy="28" r="12" fill="#e8c8a8"/>
+    <path d="M10 24 Q12 16 22 16 Q32 16 34 24" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="17" cy="27" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="27" cy="27" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M19 32 Q22 34 25 32" stroke="#e11d48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <text x="2" y="42" font-size="7">🛶</text>
+  </svg>`,
+  angie: `<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="an-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e8ff"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs>
+    <rect width="44" height="44" fill="url(#an-bg)"/>
+    <text x="34" y="12" font-size="8">💎</text>
+    <text x="2" y="11" font-size="7">✨</text>
+    <circle cx="22" cy="26" r="13" fill="#f0d0b8"/>
+    <path d="M8 20 Q12 8 22 8 Q32 8 36 20" fill="#3d2817"/>
+    <ellipse class="avatar-eye" cx="17" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <ellipse class="avatar-eye" cx="27" cy="25" rx="1.6" ry="2.2" fill="#1a1a2e"/>
+    <path class="avatar-mouth" d="M18 30 Q22 33 26 30" stroke="#e11d48" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <circle cx="22" cy="9" r="2" fill="#e11d48"/>
+    <text x="2" y="42" font-size="7">💄</text>
+  </svg>`,
+};
+
+/* ========== STATE ========== */
+let order = [];
+let idx = 0;
+let score = 0;
+let correctFirst = 0;
+let correctSecond = 0;
+let missed = 0;
+let attempts = 0;  // 0 = first try, 1 = second try
+let answered = false;
+let currentFact = null;
+
+/* ========== HELPERS ========== */
+const $ = (id) => document.getElementById(id);
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ========== COVER ========== */
+function buildCover() {
+  const grid = $('roster-grid');
+  grid.innerHTML = '';
+  MEMBERS.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.innerHTML = `
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="photo-frame${m.id === 'susin' ? ' susin' : ''}">
+            <img class="photo" src="${m.img}" alt="${m.name}" />
+            <div class="avatar-bubble" data-member="${m.id}">${AVATARS[m.avatar]}</div>
+          </div>
+          <div class="flip-name">${m.name}</div>
+          <div class="flip-hint">tap to flip</div>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="bio-quote">"</div>
+          <div class="bio-text">${m.bio}</div>
+          <div class="bio-name">— ${m.name}</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+      const av = card.querySelector('.avatar-bubble');
+      if (card.classList.contains('flipped')) {
+        av.classList.add('cheer');
+        setTimeout(() => av.classList.remove('cheer'), 1900);
+      }
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ========== GAME LOGIC ========== */
+function startGame() {
+  order = shuffle(FACTS.map((_, i) => i));
+  idx = 0; score = 0;
+  correctFirst = 0; correctSecond = 0; missed = 0;
+  $('score').textContent = '0';
+  showScreen('screen-game');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  currentFact = FACTS[order[idx]];
+  $('fact-icon').textContent = currentFact.icon;
+  $('fact-text').textContent = currentFact.text;
+  $('q-current').textContent = idx + 1;
+  $('q-total').textContent = FACTS.length;
+  $('progress-bar').style.width = `${((idx) / FACTS.length) * 100}%`;
+  updateAttemptsUI();
+
+  const choices = shuffle(MEMBERS);
+  const container = $('choices');
+  container.innerHTML = '';
+  choices.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'choice' + (m.id === 'susin' ? ' susin' : '');
+    btn.type = 'button';
+    btn.dataset.id = m.id;
+    btn.innerHTML = `
+      <img src="${m.img}" alt="${m.name}" />
+      <div class="choice-name">${m.name}</div>
+    `;
+    btn.addEventListener('click', () => onPick(btn, m));
+    container.appendChild(btn);
+  });
+  attempts = 0;
+  answered = false;
+}
+
+function updateAttemptsUI() {
+  const dots = document.querySelectorAll('#attempts .dot');
+  dots.forEach(d => {
+    const n = parseInt(d.dataset.try, 10);
+    d.classList.toggle('used', n <= attempts);
+  });
+}
+
+function onPick(btn, member) {
+  if (answered) return;
+
+  const correctId = currentFact.owner;
+  const owner = MEMBERS.find(m => m.id === correctId);
+  const isCorrect = member.id === correctId;
+
+  if (isCorrect) {
+    // ✅ CORRECT
+    answered = true;
+    document.querySelectorAll('.choice').forEach(c => c.classList.add('disabled'));
+    btn.classList.add('correct');
+
+    if (attempts === 0) {
+      correctFirst++;
+      score++;
+    } else {
+      correctSecond++;
+    }
+    $('score').textContent = score;
+
+    const title = attempts === 0
+      ? ['Nailed it! ✨','Slay! 💅','You KNOW us!','Brilliant!','Periodt! 🔥'][Math.floor(Math.random()*5)]
+      : ['Got it! 🙌','Phew! 😮‍💨','Caught it!','Caught you!','Got there!'][Math.floor(Math.random()*5)];
+
+    showFeedback({
+      mode: 'ok',
+      emoji: attempts === 0 ? '✅' : '💖',
+      title,
+      text: `That's <b>${owner.name}</b>!`,
+      buttonText: 'Next ➡'
+    });
+    burstConfetti(attempts === 0);
+    return;
+  }
+
+  // ❌ WRONG
+  btn.classList.add('wrong');
+
+  if (attempts === 0) {
+    // First wrong — give another try
+    attempts = 1;
+    updateAttemptsUI();
+    const msg = TRY_AGAIN[Math.floor(Math.random() * TRY_AGAIN.length)];
+    showFeedback({
+      mode: 'try',
+      emoji: '🤔',
+      title: 'Try Again!',
+      text: msg + '<span class="small">You\'ve got ONE more guess ✨</span>',
+      buttonText: 'Pick Again 🔄'
+    });
+    // Reset choices when they dismiss the overlay
+    pendingRetry = true;
+  } else {
+    // Second wrong — reveal answer
+    answered = true;
+    document.querySelectorAll('.choice').forEach(c => c.classList.add('disabled'));
+    const rightBtn = document.querySelector(`.choice[data-id="${correctId}"]`);
+    if (rightBtn) rightBtn.classList.add('correct');
+    missed++;
+
+    const tmpl = GIVE_UP[Math.floor(Math.random() * GIVE_UP.length)];
+    const enc = FINAL_ENCOURAGE[Math.floor(Math.random() * FINAL_ENCOURAGE.length)];
+    showFeedback({
+      mode: 'no',
+      emoji: '😮',
+      title: 'The reveal!',
+      text: tmpl.replace('{name}', `<b>${owner.name}</b>`) + '<br/>' + enc.replace('{name}', `<b>${owner.name}</b>`),
+      buttonText: 'Next ➡'
+    });
+  }
+}
+
+let pendingRetry = false;
+
+function showFeedback({ mode, emoji, title, text, buttonText }) {
+  $('fb-emoji').textContent = emoji;
+  $('fb-title').textContent = title;
+  $('fb-title').className = 'feedback-title ' + mode;
+  $('fb-text').innerHTML = text;
+  $('fb-next').textContent = buttonText || 'Next ➡';
+  $('feedback').classList.add('show');
+}
+function hideFeedback() { $('feedback').classList.remove('show'); }
+
+function handleFeedbackNext() {
+  hideFeedback();
+  if (pendingRetry) {
+    // Reset choices for second attempt
+    pendingRetry = false;
+    document.querySelectorAll('.choice').forEach(c => {
+      c.classList.remove('disabled', 'wrong');
+    });
+  } else {
+    // Advance to next question
+    idx++;
+    if (idx >= FACTS.length) {
+      finishGame();
+    } else {
+      renderQuestion();
+    }
+  }
+}
+
+function finishGame() {
+  const total = FACTS.length;
+  $('final-score').textContent = score;
+  $('stat-correct').textContent = correctFirst;
+  $('stat-retry').textContent = correctSecond;
+  $('stat-wrong').textContent = missed;
+  $('progress-bar').style.width = '100%';
+
+  let title, msg;
+  if (score === total && correctFirst === total) {
+    title = 'PERIODT! 💅';
+    msg = `PERFECT first try! You literally know us better than we know ourselves 😭✨`;
+  } else if (score === total) {
+    title = 'Nailed It! 🔥';
+    msg = `All <b>${total}/${total}</b> — a few took two tries, but you still came through 💖`;
+  } else if (score >= 10) {
+    title = 'Slay! 💫';
+    msg = `<b>${score}/${total}</b> — that's main character energy right there ✨`;
+  } else if (score >= 7) {
+    title = 'Vibes!';
+    msg = `<b>${score}/${total}</b> — pretty solid fr. A few sneaky ones in there 👀`;
+  } else if (score >= 4) {
+    title = 'It\'s Giving…';
+    msg = `<b>${score}/${total}</b> — let's hang out more so you can learn who's who 😄`;
+  } else {
+    title = 'Plot Twist City!';
+    msg = `<b>${score}/${total}</b> — clearly we're full of unexpected talents 🫢`;
+  }
+  $('end-title').textContent = title;
+  $('end-message').innerHTML = msg;
+
+  showScreen('screen-end');
+  if (correctFirst >= 8) burstConfetti(true);
+}
+
+/* ========== CONFETTI ========== */
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let confetti = [];
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function burstConfetti(big = false) {
+  const colors = ['#ff6b9d', '#c084fc', '#6366f1', '#fbbf24', '#34d399', '#fb7185', '#06b6d4'];
+  const n = big ? 220 : 100;
+  for (let i = 0; i < n; i++) {
+    confetti.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2 + 60,
+      vx: (Math.random() - 0.5) * (big ? 20 : 13),
+      vy: (Math.random() - 1.2) * (big ? 18 : 13),
+      g: 0.35,
+      size: Math.random() * 9 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.3,
+      life: 0
+    });
+  }
+  animateConfetti();
+}
+function animateConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  confetti.forEach(c => {
+    c.vy += c.g;
+    c.x += c.vx;
+    c.y += c.vy;
+    c.rot += c.vr;
+    c.life++;
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.rotate(c.rot);
+    ctx.fillStyle = c.color;
+    ctx.globalAlpha = Math.max(0, 1 - c.life / 200);
+    ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.5);
+    ctx.restore();
+  });
+  confetti = confetti.filter(c => c.life < 200 && c.y < canvas.height + 40);
+  if (confetti.length > 0) requestAnimationFrame(animateConfetti);
+}
+
+/* ========== EVENT BINDINGS ========== */
+$('go-start-btn').addEventListener('click', startGame);
+$('restart-btn').addEventListener('click', () => showScreen('screen-cover'));
+$('fb-next').addEventListener('click', handleFeedbackNext);
+
+document.addEventListener('keydown', (e) => {
+  if ($('screen-game').classList.contains('active') && !answered) {
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 6) {
+      const buttons = document.querySelectorAll('.choice');
+      if (buttons[n - 1]) buttons[n - 1].click();
+    }
+  } else if (e.key === 'Enter' && $('feedback').classList.contains('show')) {
+    handleFeedbackNext();
+  }
+});
+
+buildCover();
+</script>
+</body>
+</html>
